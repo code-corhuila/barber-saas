@@ -1,65 +1,69 @@
 # BarberSaaS
 
-SaaS multi-tenant para la gestión integral de barberías en Colombia: agenda y reserva de
-citas, administración de personal y horarios, programa de fidelidad, control financiero e
-inventario, y notificaciones push. Cuatro roles de usuario: `client`, `barber`, `admin`
-(dueño de barbería) y `super-admin` (operador de la plataforma).
+Multi-tenant SaaS for barbershop management in Colombia: appointment scheduling, staff and
+schedule management, a loyalty program, financial and inventory tracking, and push
+notifications. Four user roles: `client`, `barber`, `admin` (barbershop owner), and
+`super-admin` (platform operator).
 
-Proyecto del curso **Sistemas Distribuidos** (Grupo G2).
+Project for the **Distributed Systems** course (Group G2).
 
-> **Estás en la rama `develop`** — la rama activa de desarrollo, donde vive el código real
-> hoy. `main` y `qa` todavía no tienen una versión promovida.
+> **Work in progress.** What is currently in this repository reflects the project's
+> progress so far during the course — it is **not** the final product. Features,
+> structure, and documentation are still being built and will keep changing.
 
-## Equipo
+> **You are on the `develop` branch** — the active development branch, where the real code
+> lives today. `main` and `qa` do not have a promoted version yet.
 
-| Integrante | Rol |
+## Team
+
+| Member | Role |
 |---|---|
 | Carlos Mauricio Leal Medina | Tech Lead / Lead Developer |
 | Daniel Felipe Cerquera Idrobo | Developer |
 | Juan Pablo Borrero Morales | Developer |
 | Carolay Arraut Heredia | Developer |
 
-## Estado del proyecto
+## Project status
 
-En desarrollo activo. El backend (Java 21 / Spring Boot) y la app móvil (Expo / React
-Native) ya tienen implementados los módulos centrales: autenticación, gestión de
-barberías y empleados, citas, horarios, fidelidad, finanzas, inventario, notificaciones y
-promociones. La documentación de arquitectura y dominio vive en un repositorio aparte
+Under active development. The backend (Java 21 / Spring Boot) and the mobile app (Expo /
+React Native) already have the core modules implemented: authentication, barbershop and
+employee management, appointments, schedules, loyalty, finance, inventory, notifications,
+and promotions. Architecture and domain documentation lives in a separate repository
 (`barber-saas-docs`).
 
-## Estructura de este repo
+## Repo structure
 
 ```
-barbersaas-backend/barbersaas-backend/     → Backend Spring Boot (Java 21)
-barbersaas-frontend (2)/.../barbersaas-mobile/  → App móvil (Expo / React Native)
-e2e-tests/                                 → Pruebas end-to-end (Playwright)
-perf-tests/                                → Pruebas de carga
-docker-compose.yml                         → Levanta todo el stack en contenedores
+barbersaas-backend/barbersaas-backend/          → Backend Spring Boot (Java 21)
+barbersaas-frontend (2)/.../barbersaas-mobile/  → Mobile app (Expo / React Native)
+e2e-tests/                                      → End-to-end tests (Playwright)
+perf-tests/                                     → Load tests
+docker-compose.yml                              → Brings up the whole stack in containers
 ```
 
-## Ramas de trabajo
+## Branch workflow
 
-| Rama | Uso |
+| Branch | Purpose |
 |---|---|
-| `develop` | **Acá.** Todo el trabajo en curso se hace en esta rama. |
-| `qa` | Pruebas antes de pasar a producción. |
-| `main` | Rama estable / release, se promueve desde `qa`. |
+| `develop` | **You are here.** All ongoing work happens on this branch. |
+| `qa` | Testing before promoting to production. |
+| `main` | Stable / release branch, promoted from `qa`. |
 
 ## Stack
 
 - **Backend:** Java 21, Spring Boot 3.3.4, PostgreSQL/MySQL, Redis, JWT, Docker.
-- **Móvil:** Expo, React Native, TypeScript, TanStack Query, Zustand.
+- **Mobile:** Expo, React Native, TypeScript, TanStack Query, Zustand.
 
-## Cómo levantar el entorno
+## Getting started
 
 ```bash
 docker compose up
 ```
 
-Levanta PostgreSQL/MySQL, Redis, el backend y Nginx en una sola red, con los datos en un
-volumen persistente.
+Brings up PostgreSQL/MySQL, Redis, the backend, and Nginx on a single network, with data
+persisted in a volume.
 
-Para la app móvil (fuera de Docker, con Metro bundler):
+For the mobile app (outside Docker, with the Metro bundler):
 
 ```bash
 cd "barbersaas-frontend (2)/barbersaas-frontend/barbersaas-mobile"
