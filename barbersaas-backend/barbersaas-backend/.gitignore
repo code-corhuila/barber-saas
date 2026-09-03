@@ -1,0 +1,23 @@
+# Maven
+target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Secrets & runtime data
+secrets/
+uploads/
+.env
+.env.*
+!.env.example
+application-local.*
+*.key
+*.jks
+*.keystore
+
+# OS
+.DS_Store
+Thumbs.db

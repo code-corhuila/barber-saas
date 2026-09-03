@@ -1,0 +1,21 @@
+# IDE
+.vscode/
+.idea/
+*.iml
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets (red de seguridad a nivel repo; ver tambien los .gitignore de cada subproyecto)
+.env
+.env.*
+!.env.example
+*.key
+*.jks
+*.keystore
+google-services.json
+GoogleService-Info.plist
+*firebase-adminsdk*.json
+*firebase-service-account*.json
+application-local.*

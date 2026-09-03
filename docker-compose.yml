@@ -1,0 +1,109 @@
+# Orquesta TODO el stack de BarberSaaS (backend + frontend) desde un solo lugar.
+# El backend (Postgres, Redis, Spring Boot, Nginx) esta definido en su propio
+# docker-compose.yml y se incluye tal cual; aca solo se agrega el frontend.
+#
+# Uso:
+#   docker compose up -d --build                    # todo (incluye frontend-dev)
+#   docker compose up -d --build backend nginx postgres redis frontend-web
+#   docker compose --profile dev up -d --build frontend-dev
+#
+# Pruebas automatizadas (perfil "test", no corren con un `up` normal):
+#   docker compose --profile test run --rm backend-tests   # unitarias JUnit/Mockito
+#   docker compose --profile test up --build --abort-on-container-exit e2e-tests
+#   docker compose --profile test run --rm perf-tests      # carga con k6
+
+include:
+  - path: ./barbersaas-backend/barbersaas-backend/docker-compose.yml
+
+services:
+  # Build estatico (Nginx) del target web - para pruebas de navegador (Selenium, etc.)
+  frontend-web:
+    build:
+      context: "./barbersaas-frontend (2)/barbersaas-frontend/barbersaas-mobile"
+      dockerfile: Dockerfile
+      args:
+        EXPO_PUBLIC_API_URL: http://localhost:8080
+    container_name: barbersaas-frontend-web
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+
+  # Servidor de desarrollo Expo (Metro) con hot-reload, target web.
+  frontend-dev:
+    profiles: ["dev"]
+    build:
+      context: "./barbersaas-frontend (2)/barbersaas-frontend/barbersaas-mobile"
+      dockerfile: Dockerfile.dev
+    container_name: barbersaas-frontend-dev
+    restart: unless-stopped
+    environment:
+      EXPO_PUBLIC_API_URL: http://localhost:8080
+    ports:
+      - "8081:8081"
+    volumes:
+      - "./barbersaas-frontend (2)/barbersaas-frontend/barbersaas-mobile:/app"
+      - frontend_node_modules:/app/node_modules
+
+  # =========================================================================
+  # PRUEBAS AUTOMATIZADAS (perfil "test")
+  # =========================================================================
+
+  # Pruebas unitarias del backend (JUnit + Mockito). No necesita levantar
+  # Postgres/Redis -- son mocks puros contra las reglas de negocio.
+  backend-tests:
+    profiles: ["test"]
+    image: maven:3.9-eclipse-temurin-21
+    container_name: barbersaas-backend-tests
+    working_dir: /app
+    volumes:
+      - "./barbersaas-backend/barbersaas-backend:/app"
+      - maven_repo_cache:/root/.m2
+    command: mvn test
+
+  # Build del frontend-web dedicado a pruebas: a diferencia de "frontend-web"
+  # (que usa localhost:8080 porque lo abre un navegador humano en el host),
+  # este usa el nombre del servicio "backend" en la red interna de Docker,
+  # que es lo que puede resolver un navegador corriendo DENTRO de otro
+  # contenedor (Playwright). No se expone puerto al host, solo lo usa e2e-tests.
+  frontend-web-test:
+    profiles: ["test"]
+    build:
+      context: "./barbersaas-frontend (2)/barbersaas-frontend/barbersaas-mobile"
+      dockerfile: Dockerfile
+      args:
+        EXPO_PUBLIC_API_URL: http://backend:8080
+    container_name: barbersaas-frontend-web-test
+    depends_on:
+      - backend
+
+  # Pruebas E2E con Playwright: simulan un usuario real en el navegador
+  # (login, navegacion por rol, cierre de sesion) contra frontend-web-test.
+  e2e-tests:
+    profiles: ["test"]
+    build:
+      context: ./e2e-tests
+    container_name: barbersaas-e2e-tests
+    depends_on:
+      - frontend-web-test
+      - backend
+    environment:
+      BASE_URL: http://frontend-web-test
+    volumes:
+      - ./e2e-tests/results:/results
+
+  # Prueba de carga (k6) contra el backend real.
+  perf-tests:
+    profiles: ["test"]
+    image: grafana/k6:latest
+    container_name: barbersaas-perf-tests
+    depends_on:
+      - backend
+    volumes:
+      - ./perf-tests:/scripts
+    environment:
+      API_URL: http://backend:8080
+    command: run /scripts/load-test.js
+
+volumes:
+  frontend_node_modules:
+  maven_repo_cache:
