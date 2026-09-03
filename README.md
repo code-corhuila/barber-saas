@@ -1,53 +1,57 @@
 # BarberSaaS
 
-SaaS multi-tenant para la gestión integral de barberías en Colombia: agenda y reserva de
-citas, administración de personal y horarios, programa de fidelidad, control financiero e
-inventario, y notificaciones push. Cuatro roles de usuario: `client`, `barber`, `admin`
-(dueño de barbería) y `super-admin` (operador de la plataforma).
+Multi-tenant SaaS for barbershop management in Colombia: appointment scheduling, staff and
+schedule management, a loyalty program, financial and inventory tracking, and push
+notifications. Four user roles: `client`, `barber`, `admin` (barbershop owner), and
+`super-admin` (platform operator).
 
-Proyecto del curso **Sistemas Distribuidos** (Grupo G2).
+Project for the **Distributed Systems** course (Group G2).
 
-## Equipo
+> **Work in progress.** What is currently in this repository reflects the project's
+> progress so far during the course — it is **not** the final product. Features,
+> structure, and documentation are still being built and will keep changing.
 
-| Integrante | Rol |
+## Team
+
+| Member | Role |
 |---|---|
 | Carlos Mauricio Leal Medina | Tech Lead / Lead Developer |
 | Daniel Felipe Cerquera Idrobo | Developer |
 | Juan Pablo Borrero Morales | Developer |
 | Carolay Arraut Heredia | Developer |
 
-## Estado del proyecto
+## Project status
 
-En desarrollo activo. El backend (Java 21 / Spring Boot) y la app móvil (Expo / React
-Native) ya tienen implementados los módulos centrales: autenticación, gestión de
-barberías y empleados, citas, horarios, fidelidad, finanzas, inventario, notificaciones y
-promociones. La documentación de arquitectura y dominio vive en un repositorio aparte
+Under active development. The backend (Java 21 / Spring Boot) and the mobile app (Expo /
+React Native) already have the core modules implemented: authentication, barbershop and
+employee management, appointments, schedules, loyalty, finance, inventory, notifications,
+and promotions. Architecture and domain documentation lives in a separate repository
 (`barber-saas-docs`).
 
-## Ramas de trabajo
+## Branch workflow
 
-Este repo usa tres ramas:
+This repo uses three branches:
 
-| Rama | Uso |
+| Branch | Purpose |
 |---|---|
-| `develop` | **Rama activa de desarrollo — es donde está el código real hoy.** Todo el trabajo en curso se hace acá. |
-| `qa` | Pruebas antes de pasar a producción. |
-| `main` | Rama estable / release. Se promueve desde `qa` cuando una versión queda lista. |
+| `develop` | **Active development branch — this is where the real code lives today.** All ongoing work happens here. |
+| `qa` | Testing before promoting to production. |
+| `main` | Stable / release branch. Promoted from `qa` once a version is ready. |
 
-**Para ver el código del backend y la app móvil, cambiate a la rama `develop`** —
-`main` todavía no tiene una versión promovida.
+**To see the backend and mobile app code, switch to the `develop` branch** — `main` does
+not have a promoted version yet.
 
 ## Stack
 
 - **Backend:** Java 21, Spring Boot 3.3.4, PostgreSQL/MySQL, Redis, JWT, Docker.
-- **Móvil:** Expo, React Native, TypeScript, TanStack Query, Zustand.
+- **Mobile:** Expo, React Native, TypeScript, TanStack Query, Zustand.
 
-## Cómo levantar el entorno
+## Getting started
 
 ```bash
 git checkout develop
 docker compose up
 ```
 
-Levanta PostgreSQL/MySQL, Redis, el backend y Nginx en una sola red, con los datos en un
-volumen persistente.
+Brings up PostgreSQL/MySQL, Redis, the backend, and Nginx on a single network, with data
+persisted in a volume.
