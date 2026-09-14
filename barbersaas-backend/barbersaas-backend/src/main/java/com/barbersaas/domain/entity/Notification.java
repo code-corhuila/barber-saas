@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 @Builder
 public class Notification {
 
-    public enum Type { APPOINTMENT_CONFIRMATION, REMINDER, PROMOTION, SYSTEM }
+    public enum Type { APPOINTMENT_CONFIRMATION, REMINDER, PROMOTION, SYSTEM, LOYALTY }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

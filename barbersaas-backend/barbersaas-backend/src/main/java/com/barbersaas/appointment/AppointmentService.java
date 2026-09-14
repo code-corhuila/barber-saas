@@ -9,6 +9,7 @@ import com.barbersaas.domain.repository.*;
 import com.barbersaas.exception.BadRequestException;
 import com.barbersaas.exception.ForbiddenException;
 import com.barbersaas.exception.ResourceNotFoundException;
+import com.barbersaas.loyalty.LoyaltyService;
 import com.barbersaas.notification.NotificationService;
 import com.barbersaas.security.TenantContext;
 import lombok.RequiredArgsConstructor;
@@ -37,6 +38,7 @@ public class AppointmentService {
     private final NotificationService notificationService;
     private final RewardCouponRepository rewardCouponRepository;
     private final FinanceRecordRepository financeRecordRepository;
+    private final LoyaltyService loyaltyService;
 
     // =====================================================================
     // CREAR CITA (CLIENT)
@@ -220,9 +222,14 @@ appointment = savedAppointment;
 
         registerServiceIncome(appointment);
 
+        // El sticker de fidelizacion se otorga automaticamente aqui, en la misma
+        // transaccion, siempre que la barberia tenga un programa de fidelizacion
+        // activo (ver LoyaltyService#grantStickerForCompletedAppointment). Si no
+        // lo tiene, no se lanza excepcion: completar la cita no debe fallar por esto.
+        Long completedByUserId = TenantContext.getUserId();
+        loyaltyService.grantStickerForCompletedAppointment(appointment, completedByUserId);
+
         return toResponse(appointment);
-        // NOTA: la asignacion de sticker de fidelizacion se hace en la Fase 6,
-        // como un paso posterior explicito (no automatico), segun el diseño original.
     }
 
     /**

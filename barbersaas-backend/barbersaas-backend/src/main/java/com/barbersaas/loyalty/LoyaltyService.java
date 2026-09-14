@@ -7,6 +7,7 @@ import com.barbersaas.exception.BadRequestException;
 import com.barbersaas.exception.ForbiddenException;
 import com.barbersaas.exception.ResourceNotFoundException;
 import com.barbersaas.loyalty.dto.*;
+import com.barbersaas.notification.NotificationService;
 import com.barbersaas.security.TenantContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,7 @@ public class LoyaltyService {
     private final BarbershopRepository barbershopRepository;
     private final AppointmentRepository appointmentRepository;
     private final RewardCouponRepository rewardCouponRepository;
+    private final NotificationService notificationService;
 
 
     // =====================================================================
@@ -119,7 +121,36 @@ public class LoyaltyService {
                 .grantedBy(grantedBy)
                 .build());
 
+        notificationService.notify(
+                client.getId(),
+                "Sticker de fidelizacion ganado",
+                "Ganaste un sticker de fidelizacion. Llevas " + card.getStickersCount() + " acumulados.",
+                Notification.Type.LOYALTY
+        );
+
         return toResponse(card, barbershopId);
+    }
+
+    /**
+     * Otorga el sticker automaticamente al completar una cita, solo si la
+     * barberia tiene un programa de fidelizacion activo. Si no lo tiene,
+     * no lanza excepcion: completar la cita no debe fallar por esto.
+     * Reutiliza grantSticker() para no duplicar la logica de acumulacion
+     * ni la notificacion.
+     */
+    @Transactional
+    public void grantStickerForCompletedAppointment(Appointment appointment, Long grantedByUserId) {
+        Long barbershopId = appointment.getBarbershop().getId();
+
+        if (configRepository.findByBarbershopIdAndIsActiveTrue(barbershopId).isEmpty()) {
+            return;
+        }
+
+        GrantStickerRequest request = new GrantStickerRequest();
+        request.setClientId(appointment.getClient().getId());
+        request.setAppointmentId(appointment.getId());
+
+        grantSticker(grantedByUserId, request);
     }
 
     // =====================================================================
@@ -171,6 +202,14 @@ public class LoyaltyService {
                 .type(LoyaltyTransaction.Type.REWARD_REDEEMED)
                 .grantedBy(grantedBy)
                 .build());
+
+        notificationService.notify(
+                card.getClient().getId(),
+                "Recompensa canjeada",
+                "Canjeaste tu recompensa de fidelizacion: " + config.getRewardDescription()
+                        + ". Se aplicara como descuento en tu proxima cita.",
+                Notification.Type.LOYALTY
+        );
 
         return toResponse(card, barbershopId);
     }

@@ -9,6 +9,7 @@ import com.barbersaas.domain.repository.*;
 import com.barbersaas.exception.BadRequestException;
 import com.barbersaas.exception.ForbiddenException;
 import com.barbersaas.exception.ResourceNotFoundException;
+import com.barbersaas.loyalty.LoyaltyService;
 import com.barbersaas.notification.NotificationService;
 import com.barbersaas.security.TenantContext;
 import org.junit.jupiter.api.AfterEach;
@@ -49,6 +50,7 @@ class AppointmentServiceTest {
     @Mock private NotificationService notificationService;
     @Mock private RewardCouponRepository rewardCouponRepository;
     @Mock private FinanceRecordRepository financeRecordRepository;
+    @Mock private LoyaltyService loyaltyService;
 
     private AppointmentService appointmentService;
 
@@ -63,7 +65,7 @@ class AppointmentServiceTest {
         appointmentService = new AppointmentService(
                 appointmentRepository, barberProfileRepository, serviceRepository,
                 userRepository, barbershopRepository, notificationService,
-                rewardCouponRepository, financeRecordRepository);
+                rewardCouponRepository, financeRecordRepository, loyaltyService);
 
         barbershopA = Barbershop.builder().id(1L).name("Barberia A").cancellationPolicyHours(2).build();
         barbershopB = Barbershop.builder().id(2L).name("Barberia B").cancellationPolicyHours(2).build();
