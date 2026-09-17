@@ -43,6 +43,8 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
       JWT_SECRET: change_this_in_production_to_a_long_random_secret_key_min_256bits
+      MAIL_USERNAME: ${MAIL_USERNAME}
+      MAIL_PASSWORD: ${MAIL_PASSWORD}
       FCM_CREDENTIALS_PATH: /app/secrets/firebase-service-account.json
     ports:
       - "8080:8080"
